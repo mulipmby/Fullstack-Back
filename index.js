@@ -23,6 +23,14 @@ let persons = [
     number: "2573737"
   }
 ]
+
+const generateId = () => {
+    const maxId = persons.length > 0
+      ? Math.max(...persons.map(p => p.id))
+      : 0
+    return maxId + 1
+  }
+  
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
   })
@@ -30,6 +38,18 @@ app.get('/', (req, res) => {
   app.get('/api/persons/', (request, response) => {
     if (persons) {
       response.json(persons)
+    } else {
+      response.status(404).end()
+    }
+  })
+
+  app.get('/info', (request, response) => {
+    var data = `phonebok has info for ${persons.length} people`
+    var time = new Date();
+    
+
+    if (persons) {
+      response.json(`${data} ${time}`)
     } else {
       response.status(404).end()
     }
