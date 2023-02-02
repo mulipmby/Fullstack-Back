@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
   {
     id: 1,
@@ -25,7 +27,7 @@ let persons = [
 ]
 
   
-app.get('/', (req, res) => {
+  app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
   })
   
@@ -71,4 +73,45 @@ app.get('/', (req, res) => {
   const PORT = 3001
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
+  })
+
+  const generateId = () => {
+    const maxId = persons.length > 0
+      ? Math.max(...persons.map(p => p.id))
+      : 0
+    return maxId + 1
+  }
+
+  app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateId(),
+    }
+
+    if (!body.name && !body.number)
+    return response.status(400).json({ 
+      error: 'content missing' 
+    })
+
+      if (persons.map(p => p.name).includes(body.name))
+      return response.status(400).json({ 
+        error: 'name must be unique' 
+      })
+
+      if(!body.name)
+      return response.status(400).json({ 
+        error: 'add name' 
+      })
+
+      if(!body.number)
+      return response.status(400).json({ 
+        error: 'add number' 
+      })
+
+    persons = persons.concat(person)
+
+    response.json(person)
   })
