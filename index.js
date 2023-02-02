@@ -1,7 +1,20 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+
+morgan.token('jsonify', (request) => { return JSON.stringify(request.body)})
+app.use(morgan((tokens, request, response) => (
+   [
+    tokens.method(request, response),
+    tokens.url(request, response),
+    tokens.status(request, response),
+    tokens.res(request, response, 'content-length'), '-',
+    tokens['response-time'](request, response), 'ms',
+    tokens.jsonify(request, response)
+  ].join(' ')
+)))
 
 let persons = [
   {
@@ -27,8 +40,8 @@ let persons = [
 ]
 
   
-  app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>')
+  app.get('/', (request, response) => {
+    response.send('<h1>Hello World!</h1>')
   })
   
   app.get('/api/persons/', (request, response) => {
