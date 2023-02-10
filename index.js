@@ -1,57 +1,16 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose')
+const Person = require('./models/person')
+
 const app = express()
+
+
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-
-// mongoose tietokanta
-
-if (process.argv.length<3) {
-  console.log('give password as argument')
-  process.exit(1)
-}
-
-const password = process.argv[2]
-
-const url =
-  `mongodb+srv://mulipmby:${password}@cluster0.vnlqkmz.mongodb.net/puhelinLuettelo?retryWrites=true&w=majority`
-
-mongoose.set('strictQuery', false)
-mongoose.connect(url)
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
-})
-
-const Person = mongoose.model('Person', personSchema)
-
-const person = new Person({
-  name: process.argv[3],
-  number: process.argv[4]
-})
-
-if (person.name != undefined && person.number != undefined) {
-    person.save().then(result => {
-        console.log(`added ${result.name} ${result.number} to phonebook`)
-        mongoose.connection.close()
-      })
-}
-
-if (person.name === undefined && person.number === undefined) {
-    Person.find({}).then(result => {
-        result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
-    })
-}
-
-//tietokanta päättyy tähän
 
 morgan.token('jsonify', (request) => { return JSON.stringify(request.body)})
 app.use(morgan((tokens, request, response) => (
@@ -129,10 +88,10 @@ let persons = [
     response.status(204).end()
   })
 
-  const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  const PORT = process.env.PORT
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+  })
 
   const generateId = () => {
     const maxId = persons.length > 0
