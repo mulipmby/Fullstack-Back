@@ -69,19 +69,14 @@ let persons = [
     }
   })
 
-  app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(p => p.id === id)
-
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
+  app.get('/persons/:id', (request, response) => {
+    Person.findById(request.params.id).then(person => {
+      response.json(person)
+    })
       
   })
 
-  app.delete('/api/persons/:id', (request, response) => {
+  app.delete('/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(p => p.id !== id)
   
@@ -100,14 +95,14 @@ let persons = [
     return maxId + 1
   }
 
-  app.post('/api/persons', (request, response) => {
+  app.post('/persons', (request, response) => {
     const body = request.body
 
-    const person = {
+    const person = new Person({
       name: body.name,
       number: body.number,
       id: generateId(),
-    }
+    })
 
     if (!body.name && !body.number)
     return response.status(400).json({ 
@@ -129,7 +124,7 @@ let persons = [
         error: 'add number' 
       })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+      person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
