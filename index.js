@@ -112,7 +112,7 @@ app.get('/persons', (request, response) => {
       .catch(error => next(error))
   })
 
-  app.post('/persons', (request, response) => {
+  app.post('/persons', (request, response, next) => {
     const body = request.body
 
     const person = new Person({
@@ -120,7 +120,7 @@ app.get('/persons', (request, response) => {
       number: body.number,
       id: generateId(),
     })
-
+/*
     if (!body.name && !body.number)
     return response.status(400).json({ 
       error: 'content missing' 
@@ -140,7 +140,7 @@ app.get('/persons', (request, response) => {
       return response.status(400).json({ 
         error: 'add number' 
       })
-
+*/
       person.save().then(savedPerson => {
       response.json(savedPerson)
     })
