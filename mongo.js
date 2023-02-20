@@ -25,19 +25,19 @@ const person = new Person({
   number: process.argv[4]
 })
 
-if (person.name != undefined && person.number != undefined) {
-    person.save().then(result => {
-        console.log(`added ${result.name} ${result.number} to phonebook`)
-        mongoose.connection.close()
-      })
+if (person.name !== undefined && person.number !== undefined) {
+  person.save().then(result => {
+    console.log(`added ${result.name} ${result.number} to phonebook`)
+    mongoose.connection.close()
+  })
 }
 
 if (person.name === undefined && person.number === undefined) {
-    Person.find({}).then(result => {
-        result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
     })
+    mongoose.connection.close()
+  })
 }
 
